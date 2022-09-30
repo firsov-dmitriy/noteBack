@@ -1,6 +1,6 @@
 const express = require("express");
 require("dotenv").config();
-const noteRouter = require("../server/routes/note.routes");
+const noteRouter = require("./routes/note.routes");
 const cors = require("cors");
 const PORT = process.env.PORT || 5000;
 
