@@ -1,4 +1,5 @@
-const db = require("../db");
+const db = require("../../db");
+const pagePagination = require("../pagination");
 
 class NoteService {
   async createNote(body) {
@@ -12,15 +13,17 @@ class NoteService {
   }
 
   async getNotes(query) {
-    const { field, type, search, limit = 5 } = query;
+    let result = [];
+    const { field, type, search, limit, page } = query;
     const data = await db.query(`SELECT * FROM note_db`);
     const notes = data.rows;
     const countNote = data.rowCount;
-    const countPage = Math.floor(countNote / limit);
+    let countPage = Math.ceil(notes.length / limit);
 
     if (field && search) {
       const sortArr = [];
       const rest = [];
+
       switch (field) {
         case "amount":
           for (const i of notes) {
@@ -43,15 +46,20 @@ class NoteService {
           }
           break;
       }
-      return { notes: [...sortArr, ...rest], countNote };
-    }
-    if (field || (field && type == 1)) {
-      return { notes: notes.sort((a, b) => a[field] - b[field]), countNote };
+      result = [...sortArr, ...rest];
     } else if (field && type == -1) {
-      return { notes: notes.sort((a, b) => b[field] - a[field]), countNote };
+      result = [...notes.sort((a, b) => b[field] - a[field])];
+    } else if (field || (field && type == 1)) {
+      result = [...notes.sort((a, b) => a[field] - b[field])];
+    } else {
+      result = [...notes];
     }
 
-    return { notes, countNote, countPage };
+    return {
+      notes: limit ? pagePagination(result, limit, page) : result,
+      countNote,
+      countPage,
+    };
   }
 
   async getOneNote(id) {

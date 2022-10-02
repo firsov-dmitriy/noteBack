@@ -1,5 +1,4 @@
-const db = require("../db");
-const noteService = require("../service/note.service");
+const noteService = require("../service/note/note.service");
 
 class NoteController {
   async createNote(req, res) {
