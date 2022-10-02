@@ -6,7 +6,7 @@ class NoteController {
     const { name, amount, distance } = req.body;
     const newData = new Date();
     const newNote = await db.query(
-      `INSERT INTO note (name, createdata, amount, distance) values ($1, $2, $3, $4) RETURNING * `,
+      `INSERT INTO note_db (name, createdate, amount, distance) values ($1, $2, $3, $4) RETURNING * `,
       [name, newData, amount, distance]
     );
 
@@ -21,7 +21,7 @@ class NoteController {
       } else if (type) {
         notes = await sortNotes.sort(db, field, type);
       } else {
-        notes = (await db.query(`SELECT * FROM note`)).rows;
+        notes = (await db.query(`SELECT * FROM note_db`)).rows;
       }
 
       res.json(notes);
@@ -31,20 +31,20 @@ class NoteController {
   }
   async getOneNote(req, res) {
     const id = req.params.id;
-    const note = await db.query(`SELECT * FROM note where id = $1`, [id]);
+    const note = await db.query(`SELECT * FROM note_db where id = $1`, [id]);
     res.json(note.rows[0]);
   }
   async updateNote(req, res) {
     const { id, name, amount, distance } = req.body;
     const note = await db.query(
-      `UPDATE note set id = $1, name = $2, amount = $3, distance = $4 RETURNING *`,
+      `UPDATE note_db set id = $1, name = $2, amount = $3, distance = $4 RETURNING *`,
       [id, name, amount, distance]
     );
     res.json(note.rows[0]);
   }
   async deleteNote(req, res) {
     const id = req.params.id;
-    const note = await db.query(`DELETE FROM note where id = $1`, [id]);
+    const note = await db.query(`DELETE FROM note_db where id = $1`, [id]);
     res.json(note.rows[0]);
   }
 }
