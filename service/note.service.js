@@ -66,6 +66,10 @@ class NoteService {
     );
     return note;
   }
+  async deleteNote(id) {
+    const note = await db.query(`DELETE FROM note_db where id = $1`, [id]);
+    return `Deleted note for id ${id}`;
+  }
 }
 
 const sortNotes = new NoteService();

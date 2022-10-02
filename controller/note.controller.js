@@ -12,17 +12,16 @@ class NoteController {
   }
 
   async getOneNote(req, res) {
-    const note = noteService.getOneNote(req.id);
+    const note = await noteService.getOneNote(req.params.id);
     res.json(note.rows[0]);
   }
   async updateNote(req, res) {
-    const note = noteService.updateNote(req.body);
-    res.json(note.rows[0]);
+    const note = await noteService.updateNote(req.body);
+    res.json(note);
   }
   async deleteNote(req, res) {
-    const id = req.params.id;
-    const note = await db.query(`DELETE FROM note_db where id = $1`, [id]);
-    res.json(note.rows[0]);
+    const text = await noteService.deleteNote(req.params.id);
+    res.json(text);
   }
 }
 module.exports = new NoteController();
