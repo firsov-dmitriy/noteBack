@@ -14,17 +14,28 @@ class NoteController {
   }
   async getNotes(req, res) {
     try {
-      const { field, search, type } = req.query;
+      const { field, search, type, limit, page } = req.query;
+      let count;
       let notes;
       if (search) {
         notes = await sortNotes.sortEntry(db, field, search);
       } else if (type) {
-        notes = await sortNotes.sort(db, field, type);
+        notes = (await sortNotes.sort(db, field, type)).rows;
+        count = (await sortNotes.sort(db, field, type)).rowCount;
       } else {
-        notes = (await db.query(`SELECT * FROM note_db`)).rows;
+        count = await db.query(`SELECT * FROM note_db`);
+
+        notes = (
+          await db.query(
+            `SELECT * FROM note_db LIMIT $1 ${
+              page >= 1 ? "OFFSET " + (page - 1) * limit : ""
+            }`,
+            [limit]
+          )
+        ).rows;
       }
 
-      res.json(notes);
+      res.json({ countPage: Math.floor(count / limit), notes });
     } catch (error) {
       console.error(error);
     }
