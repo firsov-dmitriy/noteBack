@@ -4,7 +4,7 @@ const pagePagination = (arr, limit, page) => {
   for (let i = 0; i < paginArr.length; i++) {
     paginArr[i] = arr.slice(i * limit, (i + 1) * limit);
   }
-  return page ? paginArr[page] : paginArr[0];
+  return page ? paginArr[page - 1] : paginArr[0];
 };
 
 module.exports = pagePagination;
